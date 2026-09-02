@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-slate-100 text-slate-900 antialiased;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+  .card-title {
+    @apply text-sm font-semibold uppercase tracking-wide text-slate-500;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-pitch-700 text-white hover:bg-pitch-800 focus:ring-pitch-600;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+  .btn-ghost {
+    @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-400;
+  }
+  .btn-sm {
+    @apply px-2.5 py-1.5 text-xs;
+  }
+  .input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-slate-400 focus:border-pitch-600 focus:outline-none focus:ring-1 focus:ring-pitch-600;
+  }
+  .label {
+    @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .badge-green {
+    @apply badge bg-pitch-100 text-pitch-800;
+  }
+  .badge-amber {
+    @apply badge bg-amber-100 text-amber-800;
+  }
+  .badge-red {
+    @apply badge bg-red-100 text-red-700;
+  }
+  .badge-slate {
+    @apply badge bg-slate-200 text-slate-700;
+  }
+  .th {
+    @apply px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500;
+  }
+  .td {
+    @apply px-3 py-2.5 text-sm;
+  }
+  .alert {
+    @apply mb-4 rounded-lg border px-4 py-3 text-sm;
+  }
+  .alert-error {
+    @apply alert border-red-200 bg-red-50 text-red-800;
+  }
+  .alert-success {
+    @apply alert border-pitch-200 bg-pitch-50 text-pitch-900;
+  }
+  .alert-warn {
+    @apply alert border-amber-200 bg-amber-50 text-amber-900;
+  }
+}
