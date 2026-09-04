@@ -46,6 +46,7 @@ export default function TeamsManager({ championship, teams, players, finishedByT
     );
   }
 
+  // Removida qualquer restrição quanto a número par/ímpar; exibição apenas informativa de inscritos
   const remaining = championship.num_teams - teams.length;
   const finishedMap = new Map(finishedByTeam.map((f) => [f.teamId, f.count]));
 
@@ -54,56 +55,55 @@ export default function TeamsManager({ championship, teams, players, finishedByT
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold">Equipas</h1>
         <p className="text-sm text-slate-500">
-          {teams.length}/{championship.num_teams} inscritas · a ordem de inscrição define o sorteo na eliminatória
+          {teams.length} inscritas · a ordem de inscrição define o sorteio
         </p>
       </div>
 
-      {remaining > 0 && (
-        <form
-          action={addTeamFormAction}
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setAddPending(true);
-            setAddErr(null);
-            setAddOk(false);
-            try {
-              const r = await addTeam(new FormData(e.currentTarget));
-              if (r && !r.ok) setAddErr(r.error ?? 'Erro');
-              else setAddOk(true);
-            } catch (ex) {
-              setAddErr(ex instanceof Error ? ex.message : 'Erro inesperado.');
-            } finally {
-              setAddPending(false);
-            }
-          }}
-          className="card mb-6 p-5"
-        >
-          <h2 className="mb-3 font-bold">Inscrever equipa</h2>
-          {addErr && <div className="alert-error">{addErr}</div>}
-          {addOk && <div className="alert-success">✔ Equipa inscrita.</div>}
-          <div className="grid gap-3 sm:grid-cols-4">
-            <div className="sm:col-span-2">
-              <label className="label">Nome da equipa *</label>
-              <input className="input" name="name" placeholder="Ex.: Costa do Sol FC" required minLength={2} />
-            </div>
-            <div>
-              <label className="label">Sigla (3 letras)</label>
-              <input className="input" name="short_name" maxLength={3} placeholder="CDS" />
-            </div>
-            <div>
-              <label className="label">Cidade</label>
-              <input className="input" name="city" placeholder="Ex.: Maputo" />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="label">Treinador</label>
-              <input className="input" name="coach" placeholder="Opcional" />
-            </div>
+      <form
+        action={addTeamFormAction}
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setAddPending(true);
+          setAddErr(null);
+          setAddOk(false);
+          try {
+            const r = await addTeam(new FormData(e.currentTarget));
+            if (r && !r.ok) setAddErr(r.error ?? 'Erro');
+            else setAddOk(true);
+          } catch (ex) {
+            setAddErr(ex instanceof Error ? ex.message : 'Erro inesperado.');
+          } finally {
+            setAddPending(false);
+          }
+        }}
+        className="card mb-6 p-5"
+      >
+        <h2 className="mb-3 font-bold">Inscrever equipa</h2>
+        {addErr && <div className="alert-error">{addErr}</div>}
+        {addOk && <div className="alert-success">✔ Equipa inscrita.</div>}
+        <div className="grid gap-3 sm:grid-cols-4">
+          <div className="sm:col-span-2">
+            <label className="label">Nome da equipa *</label>
+            <input className="input" name="name" placeholder="Ex.: Costa do Sol FC" required minLength={2} />
           </div>
-          <button className="btn-primary mt-4" disabled={addPending}>
-            {addPending ? 'A inscrever…' : '+ Inscrever equipa'}
-          </button>
-        </form>
-      )}
+          <div>
+            <label className="label">Sigla</label>
+            {/* Removido o limite de 3 caracteres */}
+            <input className="input" name="short_name" placeholder="Ex.: CDS ou qualquer sigla" />
+          </div>
+          <div>
+            <label className="label">Cidade</label>
+            <input className="input" name="city" placeholder="Ex.: Maputo" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="label">Treinador</label>
+            <input className="input" name="coach" placeholder="Opcional" />
+          </div>
+        </div>
+        <button className="btn-primary mt-4" disabled={addPending}>
+          {addPending ? 'A inscrever…' : '+ Inscrever equipa'}
+        </button>
+      </form>
 
       {teams.length === 0 && (
         <div className="card p-6 text-sm text-slate-500">Ainda não há equipas inscritas.</div>
@@ -141,6 +141,26 @@ function TeamCard({
   const flash = (m: Msg) => {
     setMsg(m);
     if (m.ok) setTimeout(() => setMsg(null), 2500);
+  };
+
+  // Função auxiliar para renderizar a etiqueta da posição
+  const renderPositionBadge = (pos: string) => {
+    switch (pos) {
+      case 'GR':
+      case 'Guarda-Redes':
+        return <span className="badge-green ml-2">GR</span>;
+      case 'FIXO':
+      case 'Fixo':
+        return <span className="badge-blue ml-2">FIX</span>;
+      case 'ALA':
+      case 'Ala':
+        return <span className="badge-amber ml-2">ALA</span>;
+      case 'PIVO':
+      case 'Pivô':
+        return <span className="badge-purple ml-2 font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded text-xs">PIV</span>;
+      default:
+        return <span className="ml-2 text-xs text-slate-400">{pos}</span>;
+    }
   };
 
   return (
@@ -198,7 +218,8 @@ function TeamCard({
           </div>
           <div>
             <label className="label">Sigla</label>
-            <input className="input" name="short_name" maxLength={3} defaultValue={team.short_name ?? ''} />
+            {/* Removido o limite de 3 caracteres */}
+            <input className="input" name="short_name" defaultValue={team.short_name ?? ''} />
           </div>
           <div>
             <label className="label">Cidade</label>
@@ -226,7 +247,7 @@ function TeamCard({
                 <span>
                   <b className="mr-1 text-slate-400">{p.number ?? '—'}</b>
                   {p.name}
-                  {p.position === 'GR' && <span className="badge-green ml-2">GR</span>}
+                  {renderPositionBadge(p.position)}
                 </span>
                 <form
                   action={deletePlayerFormAction}
@@ -264,9 +285,12 @@ function TeamCard({
               <input className="input text-center" name="number" type="number" min={1} max={99} placeholder="Dorsal" />
             </div>
             <div className="mt-2 flex items-center justify-between gap-2">
-              <select className="input" name="position" defaultValue="CAMPO" style={{ width: 'auto' }}>
-                <option value="CAMPO">Campo</option>
-                <option value="GR">Guarda-redes</option>
+              {/* Opções de posições de Futsal atualizadas */}
+              <select className="input" name="position" defaultValue="Guarda-Redes" style={{ width: 'auto' }}>
+                <option value="Guarda-Redes">Guarda-redes</option>
+                <option value="Fixo">Fixo</option>
+                <option value="Ala">Ala</option>
+                <option value="Pivô">Pivô</option>
               </select>
               <button className="btn-primary btn-sm">+ Adicionar</button>
             </div>
