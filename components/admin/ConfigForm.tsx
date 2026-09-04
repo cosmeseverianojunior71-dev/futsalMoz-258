@@ -36,9 +36,6 @@ export default function ConfigForm({ initial, teamsCount, finishedMatches, hasMa
   const [statusOk, setStatusOk] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
 
-  const isLeague =
-    !initial || initial.format === 'liga_1' || initial.format === 'liga_2' || initial.format === 'liga_final';
-
   const runInline = async (key: string, fn: (fd: FormData) => Promise<Res>, form: HTMLFormElement) => {
     setBusy(key);
     try {
@@ -118,17 +115,19 @@ export default function ConfigForm({ initial, teamsCount, finishedMatches, hasMa
             </select>
           </div>
           <div>
-            <label className="label">N.º de equipas</label>
+            <label className="label">N.º de equipas (par ou ímpar)</label>
             <input
               className="input"
               name="num_teams"
               type="number"
               min={2}
-              max={32}
+              max={64}
               defaultValue={initial?.num_teams ?? 8}
               required
             />
-            {isLeague && <p className="mt-1 text-[11px] text-slate-500">Em formato de liga deve ser par.</p>}
+            <p className="mt-1 text-[11px] text-slate-500">
+              Aceita qualquer número de equipas. Se for ímpar, uma equipa folga por jornada.
+            </p>
           </div>
           <div>
             <label className="label">Local principal (campo/pavilhão)</label>
@@ -178,7 +177,7 @@ export default function ConfigForm({ initial, teamsCount, finishedMatches, hasMa
               {initial.format === 'liga_final'
                 ? 'Gera as jornadas da fase regular. A eliminatória final é gerada depois de terminada a fase regular.'
                 : initial.format === 'eliminataria'
-                  ? 'Gera o sorteo da eliminatória (folgas para as primeiras posições de inscrição).'
+                  ? 'Gera o sorteio da eliminatória.'
                   : 'Gera todas as jornadas com datas automáticas (semanais). Pode depois ajustar data, hora e local de cada partida.'}
             </p>
             {genErr && <div className="alert-error">{genErr}</div>}
